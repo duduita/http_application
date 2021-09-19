@@ -2,25 +2,19 @@
 
 using namespace std;
 
-int getRequestSource(string response)
+string getRequestSource(char request[], string dir)
 {
-    string header = response.substr(0, response.find("\r\n\r\n"));
-
-    if (response.find("200 OK") != -1)
-        return 200;
-
-    if (response.find("400 Bad Request") != -1)
-        return 400;
-
-    if (response.find("404 Not Found") != -1)
-        return 404;
-
-    return -1;
+    char *token;
+    token = strtok(request, " ");
+    token = strtok(NULL, " ");
+    cout << dir + token << "\n";
+    return dir + token;
 }
 
 // int main()
 // {
-//     char str[] = "wireshark-labs/HTTP-wireshark-file1.html";
-//     string test = getFilename(str);
+//     char str[] = "GET /index.html HTTP/1.0\r\nHost:127.0.0.1\r\n\r\n";
+//     string dir = "/home/duduita";
+//     string test = getRequestSource(str, dir);
 //     return 0;
 // }

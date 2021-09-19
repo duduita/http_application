@@ -11,6 +11,8 @@
 #include <netdb.h>
 #include <arpa/inet.h>
 #include "urlParser.cpp"
+#include "requestParser.cpp"
+
 #define SERVER_PORT 8080 /* arbitrary, but client & server must agree*/
 #define BUF_SIZE 4096    /* block transfer size */
 #define QUEUE_SIZE 10
@@ -18,10 +20,9 @@ using namespace std;
 
 int main(int argc, char *argv[])
 {
-   // vector<string> parsedURL = urlParser(argv[1]);
-   // string host_name = parsedURL[1];
-   // string port = parsedURL[2];
-   // string source = parsedURL[3];
+   char *host_name = argv[1];
+   char *port = argv[2];
+   char *dir = argv[3];
    // cout << host_name;
    // struct hostent *he;
    // he = gethostbyname(&host_name[0]);
@@ -62,6 +63,8 @@ int main(int argc, char *argv[])
    /* Socket is now set up and bound. Wait for connection and process it. */
    while (1)
    {
+      cout << "Trying connection"
+           << "\n";
       sa = accept(s, 0, 0); /* block for connection request */
       if (sa < 0)
       {
@@ -69,18 +72,22 @@ int main(int argc, char *argv[])
          exit(-1);
       }
 
-      read(sa, buf, BUF_SIZE); /* read file name from socket */
+      cout << "accept successfully"
+           << "\n";
 
+      read(sa, buf, BUF_SIZE); /* read file name from socket */
+      string source = getRequestSource(buf, dir);
+      cout << "dir + source: " << source << "\n";
       /* Get and return the file. */
-      fd = open(buf, O_RDONLY); /* open the file to be sent back */
+      fd = open(&source[0], O_RDONLY); /* open the file to be sent back */
       if (fd < 0)
          printf("open failed");
       while (1)
       {
-         bytes = read(fd, buf, BUF_SIZE); /* read from file */
+         bytes = read(fd, &source[0], BUF_SIZE); /* read from file */
          if (bytes <= 0)
-            break;              /* check for end of file */
-         write(sa, buf, bytes); /* write bytes to socket */
+            break;                     /* check for end of file */
+         write(sa, &source[0], bytes); /* write bytes to socket */
       }
       close(fd); /* close file */
       close(sa); /* close connection */

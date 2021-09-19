@@ -5,7 +5,7 @@ using namespace std;
 string getFilename(string parsedURL)
 {
     size_t lastOccurrence;
-    lastOccurrence = parsedURL.find_last_of('/');
+    lastOccurrence = parsedURL.find_last_of(' ');
 
     if (lastOccurrence == -1)
         return parsedURL;
